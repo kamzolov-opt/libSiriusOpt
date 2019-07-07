@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def gradient_step(x_k, grad, step):
     return x_k - step * grad
 
