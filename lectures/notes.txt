@@ -1,1 +1,4 @@
-28 slides for full lecture is enough
+-- 28 slides for full lecture is enough
+-- L1 - evening, 13-JULY-2019
+-- L2 - morning, 14-JULY-2019
+
