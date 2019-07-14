@@ -1,4 +1,21 @@
--- 28 slides for full lecture is enough
--- L1 - evening, 13-JULY-2019
--- L2 - morning, 14-JULY-2019
+L1 - evening, 13-JULY-2019
+Intro about AI, Numbers, Vectors, Matrices, Norms, Functions, Continuity, Differentiability. Structure model of Single Layer Neural Network.
 
+L2 - morning, 14-JULY-2019
+Plot some graphics in Python. Talk about single derivative for function of one argument.
+Plot some graphics in Google Chrome Web Browser of 2 variables
+Talk about single derivative for function of one argument. 
+Play with photo of Neo from Matrix
+Single Layer Neural Net and it's construction. 
+Various Transfer functions.
+
+L3 - day,     14-JULY-2019
+Taylor Series, What is supervised Machine Learning,
+Engineering problems around Machine Learning, Geometric interpretation of bias-variance trade-off,
+Data-matrix, Notion of regularization
+
+L4 - evening, 14-JULY-2019
+Our prediction schema.
+K-fold cross-validation. Forward and Backward phase.
+Chain Rule (on board). Derivation how compute partial derivatives for quadratic Loss.
+Source code with which you figure out “What it do?”
