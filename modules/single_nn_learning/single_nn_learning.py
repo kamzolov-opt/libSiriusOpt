@@ -3,7 +3,7 @@
 
 import sys, os, time, math, sys
 
-dirScript = os.path.dirname(os.path.abspath(sys.argv[0]))
+dirScript = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dirScript)
 
 from single_nn import forwardEvalute
