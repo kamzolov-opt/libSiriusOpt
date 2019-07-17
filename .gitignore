@@ -1,0 +1,2 @@
+# exclude different autogenerate files
+*.pyc
