@@ -9,6 +9,7 @@ sys.path.append(dirScript)
 from single_nn import forwardEvalute
 from single_nn import partial_DL_da
 from single_nn import partial_DL_db
+from single_nn import ActivationFuncs
 
 import numpy as np
 
@@ -118,6 +119,8 @@ if __name__ == "__main__":
     cfg.m = 10                    # number of activation functions
     cfg.n = X.shape[1]            # number of input attributes
     cfg.totalSamples = X.shape[0] # total number of examples
+
+    cfg.function = ActivationFuncs.SIGMOID
 
     a = np.zeros((cfg.n, cfg.m))
     b = np.ones((cfg.m, 1))
