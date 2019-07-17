@@ -15,6 +15,7 @@ import siriusopt
 import input_data_read
 import sampling
 import single_nn_learning
+import actfuncs
 
 if __name__ == "__main__":
     t0 = time.time()  
@@ -28,7 +29,7 @@ if __name__ == "__main__":
 
 #    input_data_read.showImageMat(data_storage, 4)
 #    input_data_read.showImage(data_storage, 4)
-
+    single_nn_learning.cfg.function = actfuncs.ActivationFuncs.SIGMOID
     single_nn_learning.cfg.m = 10                                      
     single_nn_learning.cfg.n = single_nn_learning.X.shape[1]      
     single_nn_learning.cfg.totalSamples = 20 #single_nn_learning.X.shape[0]

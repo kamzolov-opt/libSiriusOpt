@@ -9,8 +9,9 @@ sys.path.append(dirScript)
 from single_nn import forwardEvalute
 from single_nn import partial_DL_da
 from single_nn import partial_DL_db
-from single_nn import ActivationFuncs
+#from single_nn import ActivationFuncs
 
+import actfuncs
 import numpy as np
 
 X = None              # Data Matrix, which stores examples by rows
