@@ -19,6 +19,8 @@ def dS_dOut(out):
 class ForwardResult:
     pass
 
+
+
 #===============================================================================
 
 def forwardEvalute(x_with_intercept, a, b, cfg = None):
@@ -28,7 +30,7 @@ def forwardEvalute(x_with_intercept, a, b, cfg = None):
         if i == 0:
             o[i] = S0(z[i])
         else:
-            o[i] = S(z[i])
+            o[i] = cfg.function(z[i])
     Fhat = np.dot(o.T, b)
 
     res = ForwardResult()
