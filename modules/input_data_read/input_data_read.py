@@ -2,8 +2,7 @@
 
 import sys, os, time, math
 
-dirScript = os.path.dirname(os.path.abspath(sys.argv[0]))
-
+dirScript = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dirScript)
 sys.path.append(os.path.join(dirScript, "python-mnist"))
 
