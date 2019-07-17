@@ -48,6 +48,10 @@ def unpackParameterFromVector(allParams, cfg):
 
     return a,b
 
+def getZeroParams():
+    params = np.zeros((cfg.n * cfg.m + cfg.m, 1))
+    return params
+
 def empiricalRisk(x):
     '''
     x is a parameters of neural net which consist of [a, b]
@@ -68,6 +72,13 @@ def empiricalRisk(x):
         results += ((fwd.Fhat - yi) ** 2) / 2.0
 
     return results / Indicies.size
+
+def empiricalRiskGradientWithIndex(x, index):
+    '''
+    Have no idea for what index correspond to
+    '''
+    return empiricalRiskGradient(x)
+
 
 def empiricalRiskGradient(x):
     '''

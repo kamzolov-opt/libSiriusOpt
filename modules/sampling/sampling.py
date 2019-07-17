@@ -26,7 +26,7 @@ def isPrime(n):
 def generateRandomIndicies(inputLength, numbersToObtain):
    arr = np.arange(inputLength)
    np.random.shuffle(arr)
-   return list(arr[0:numbersToObtain])
+   return np.asarray(arr[0:numbersToObtain], dtype=np.int)
 
 def getBatchRandom(storage, batchSize):
     totalDataMatrixLen = len(storage.images)
@@ -38,11 +38,14 @@ def getSequentialBatchCount(storage, batchSize):
 
 def getBatchSequential(storage, batchIndex, batchSize):
     totalDataMatrixLen = len(storage.images)
-    iStart = batchIndex * bathSize
-    iEnd = (batchIndex+1)*bathSize
+    iStart = batchIndex * batchSize
+    iEnd = (batchIndex+1) * batchSize
     if (iEnd >= totalDataMatrixLen):
         iEnd = totalDataMatrixLen
-    return list(range(iStart, iEnd))
+    return np.asarray(range(iStart, iEnd), dtype=np.int)
+
+
+
 
 def crossValidationIndicies(storage, test_size = 0.33, shuffle = False):
     totalDataMatrixLen = len(storage.images)
@@ -52,12 +55,13 @@ def crossValidationIndicies(storage, test_size = 0.33, shuffle = False):
 
     indicies = None
     if shuffle == False:
-        indicies = list(range(0, totalDataMatrixLen))
+        indicies = range(0, totalDataMatrixLen)
     else:
         indicies = generateRandomIndicies(totalDataMatrixLen, totalDataMatrixLen)
    
-    train_ind = indicies[0:trainLength]
-    test_ind = indicies[trainLength:]
+    train_ind = np.asarray(indicies[0:trainLength], dtype = np.int)
+    test_ind = np.asarray(indicies[trainLength:], dtype = np.int)
+
     return train_ind, test_ind
 
 def kFoldCrossValidationIndicies(storage, kFolds, shuffle = False):
@@ -65,7 +69,7 @@ def kFoldCrossValidationIndicies(storage, kFolds, shuffle = False):
 
     indicies = None
     if shuffle == False:
-        indicies = list(range(0, totalDataMatrixLen))
+        indicies = range(0, totalDataMatrixLen)
     else:
         indicies = generateRandomIndicies(totalDataMatrixLen, totalDataMatrixLen)
 
@@ -80,8 +84,8 @@ def kFoldCrossValidationIndicies(storage, kFolds, shuffle = False):
         if (iTestEnd >= totalDataMatrixLen):
             iTestEnd = totalDataMatrixLen
         
-        test_ind = list(indicies[iTestStart:iTestEnd])
-        train_ind = list(indicies[0:iTestStart]) + list(indicies[iTestEnd:])
+        test_ind = np.asarray(indicies[iTestStart:iTestEnd], dtype = np.int)
+        train_ind = np.asarray( list(indicies[0:iTestStart]) + list(indicies[iTestEnd:]), dtype = np.int)
         kFoldsInd.append( (train_ind, test_ind) )
 
     return kFoldsInd
@@ -89,7 +93,3 @@ def kFoldCrossValidationIndicies(storage, kFolds, shuffle = False):
 if __name__ == '__main__':
     storage = input_data_read.loadData()
     print(getSequentialBatchCount(storage, 10))
-		
-	
-	
-	
