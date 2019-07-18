@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, os, time, math
+import sys, os, time, math, pickle
 
 dirScript = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dirScript)
@@ -14,8 +14,23 @@ import numpy as np
 class DataStorage:
     pass
 
+def serialize(obj, fname):
+    with open(fname, "wb") as f:
+        pickle.dump(obj, f)
+
+def deserialize(fname):
+    with open(fname, "rb") as f:
+        return pickle.load(f)
+
 # Loading test data
-def loadData():
+def loadData(cacheIsOn = True):
+    cacheFileName = "input_cache.bin"
+
+    if cacheIsOn and os.path.exists(cacheFileName):
+        print(" !! load data from cache: ", cacheFileName)
+        res = deserialize(cacheFileName)
+        return res
+
     absPathToData = os.path.join(dirScript, 'python-mnist/dir_with_mnist_data_files')
 
     mndata = MNIST(absPathToData)
@@ -23,7 +38,6 @@ def loadData():
     images, labels = mndata.load_training()
   
     res = DataStorage()
-
     res.images = images
     res.labels = labels
     res.pathToData  = absPathToData
@@ -40,7 +54,11 @@ def loadData():
         for j in range(res.imageWidth * res.imageHeight):
             res.imagesMat[i, j] = res.images[i][j]
         res.labelsMat[i, 0] = res.labels[i]
-  
+
+    if cacheIsOn:
+        print(" !! serialize to cache: ", cacheFileName)
+        serialize(res, cacheFileName)
+
     return res
 
 # Print information about storage
