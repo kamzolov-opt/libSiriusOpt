@@ -48,7 +48,11 @@ if __name__ == "__main__":
     print("BEFORE LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
 
     t0 = time.time()
-    optParams, _ = siriusopt.stochastic.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 5, func = single_nn_learning.empiricalRisk, L = 1000)
+    optParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 15, func = single_nn_learning.empiricalRisk, L = 1000)
+    points = [el[0] for el in points]
+    print(optParams)
+    print(points)
+    siriusopt.show([np.log(points)], namefile="sgd", labels=["sgd"])
     solve_time = time.time() - t0
     print("Time to solve neural net:  ", str(solve_time), " seconds")
 
