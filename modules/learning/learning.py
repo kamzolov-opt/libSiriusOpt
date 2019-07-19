@@ -3,6 +3,7 @@
 
 import os, sys, time
 import numpy as np
+import matplotlib.pyplot as plt
 
 dirScript = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dirScript)
@@ -48,12 +49,12 @@ if __name__ == "__main__":
     print("BEFORE LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
 
     t0 = time.time()
-    optParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 15, func = single_nn_learning.empiricalRisk, L = 1000)
-    points = [el[0] for el in points]
-    print(optParams)
-    print(points)
-    siriusopt.show([np.log(points)], namefile="sgd", labels=["sgd"])
+    optParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 15, func = single_nn_learning.empiricalRisk, L = 100.0)
     solve_time = time.time() - t0
+    points = [el[0] for el in points]
+    #print(optParams)
+    print("Series of optimal values: ", points)
+    siriusopt.show([points], namefile="sgd", labels=["sgd"])
     print("Time to solve neural net:  ", str(solve_time), " seconds")
 
     print("AFTER LEARNING: Current emppirical risk:", single_nn_learning.empiricalRisk(optParams))

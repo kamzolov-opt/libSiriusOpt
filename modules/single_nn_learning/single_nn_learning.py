@@ -78,7 +78,8 @@ def empiricalRisk(x):
 
 def empiricalRiskGradientWithIndex(x, index):
     '''
-    Have no idea for what index correspond to
+    x     - variables to find (parameters of neural net)
+    index - number of example
     '''
     return empiricalRiskGradient(x)
 
