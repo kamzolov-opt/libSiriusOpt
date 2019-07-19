@@ -9,7 +9,8 @@ sys.path.append(dirScript)
 from single_nn import forwardEvalute
 from single_nn import partial_DL_da
 from single_nn import partial_DL_db
-#from single_nn import ActivationFuncs
+from single_nn import partial_DL_da_compute
+from single_nn import partial_DL_db_compute
 
 import actfuncs
 import numpy as np
@@ -99,8 +100,8 @@ def empiricalRiskGradient(x):
         yi = Y[i]   
 
         fwd = forwardEvalute(xi, a, b, cfg)
-        grad_a = partial_DL_da(fwd, yi)
-        grad_b = partial_DL_db(fwd, yi)
+        grad_a = partial_DL_da(fwd, yi, cfg)
+        grad_b = partial_DL_db(fwd, yi, cfg)
 
         grad_to_all_params = packParameterToVector(grad_a, grad_b)
 

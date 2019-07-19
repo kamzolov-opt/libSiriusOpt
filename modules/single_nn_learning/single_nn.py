@@ -66,6 +66,7 @@ def partial_DL_db_compute(fwd, y, cfg):
     for i in range(m):
         db = np.zeros(m)
         db[i] = eps
+#       print(">>", x_with_intercept.shape)
         f_db_plus = forwardEvalute(x_with_intercept, a, b + db, cfg)
         f_db_plus_eval = np.square(f_db_plus.Fhat - y[0]) / 2.0
 
