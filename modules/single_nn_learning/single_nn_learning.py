@@ -9,22 +9,26 @@ sys.path.append(dirScript)
 from single_nn import forwardEvalute
 from single_nn import partial_DL_da
 from single_nn import partial_DL_db
-#from single_nn import ActivationFuncs
+# from single_nn import ActivationFuncs
 
 import actfuncs
 import numpy as np
 
-X = None              # Data Matrix, which stores examples by rows
-Y = None              # Label Vector, which stores examples by items
-Indicies = None       # Indicies of examples used for empiricalRisk() and 
+X = None  # Data Matrix, which stores examples by rows
+Y = None  # Label Vector, which stores examples by items
+Indicies = None  # Indicies of examples used for empiricalRisk() and
+
 
 class Configuration:
-   pass
+    pass
 
-cfg = Configuration() # Configuration of Neural NEt
+
+cfg = Configuration()  # Configuration of Neural NEt
+
 
 def makeRandom(x):
     return np.random.random(x.shape)
+
 
 def packParameterToVector(a, b):
     '''
@@ -34,8 +38,9 @@ def packParameterToVector(a, b):
     aAsVector = a.reshape((a.size, 1))
     bAsVector = b.reshape((b.size, 1))
 
-    allParameters = np.concatenate( (aAsVector, bAsVector) )
+    allParameters = np.concatenate((aAsVector, bAsVector))
     return allParameters
+
 
 def unpackParameterFromVector(allParams, cfg):
     '''
@@ -45,14 +50,16 @@ def unpackParameterFromVector(allParams, cfg):
     a = allParams[0:cfg.n * cfg.m, 0]
     b = allParams[cfg.n * cfg.m:, 0]
 
-    a = a.reshape( (cfg.n, cfg.m) )
-    b = b.reshape( (cfg.m, 1) )
+    a = a.reshape((cfg.n, cfg.m))
+    b = b.reshape((cfg.m, 1))
 
-    return a,b
+    return a, b
+
 
 def getZeroParams():
     params = np.zeros((cfg.n * cfg.m + cfg.m, 1))
     return params
+
 
 def empiricalRisk(x):
     '''
@@ -64,16 +71,17 @@ def empiricalRisk(x):
 
     a, b = unpackParameterFromVector(x, cfg)
     results = 0.0
-    
+
     for i in range(Indicies.size):
         xi = X[i, :]
-        xi = xi.reshape( (xi.size, 1) )
-        yi = Y[i]   
+        xi = xi.reshape((xi.size, 1))
+        yi = Y[i]
 
         fwd = forwardEvalute(xi, a, b, cfg)
         results += ((fwd.Fhat - yi) ** 2) / 2.0
 
     return results / Indicies.size
+
 
 def empiricalRiskGradientWithIndex(x, index):
     '''
@@ -89,14 +97,14 @@ def empiricalRiskGradient(x):
     step2 - np.asarray([partial_DL_da(fwd, y), partial_DL_db(fwd, y)])
     step3 - accumulate final gradient
     '''
-    
+
     a, b = unpackParameterFromVector(x, cfg)
     gradient = None
-    
+
     for i in range(Indicies.size):
         xi = X[i, :]
-        xi = xi.reshape( (xi.size, 1) )
-        yi = Y[i]   
+        xi = xi.reshape((xi.size, 1))
+        yi = Y[i]
 
         fwd = forwardEvalute(xi, a, b, cfg)
         grad_a = partial_DL_da(fwd, yi)
@@ -108,31 +116,33 @@ def empiricalRiskGradient(x):
             gradient = grad_to_all_params
         else:
             gradient += grad_to_all_params
- 
+
     return gradient / Indicies.size
- 
+
+
 if __name__ == "__main__":
-    #global X, Y
+    # global X, Y
 
     # X global variable, matrix, store all examples by ROWS
     X = np.array([[1, 2, 3, 1.0],
                   [4, 5, 6, 1.0]
-                 ]
+                  ]
                  )
 
     # Y global variable, column, store all correct values
     Y = np.array([[7],
                   [9]
-                 ])
+                  ])
 
     # Indicies by which pull examples
     Indicies = np.asarray(np.array([[1, 0]]))
 
-    cfg.m = 10                    # number of activation functions
-    cfg.n = X.shape[1]            # number of input attributes
-    cfg.totalSamples = X.shape[0] # total number of examples
+    cfg.m = 10  # number of activation functions
+    cfg.n = X.shape[1]  # number of input attributes
+    cfg.totalSamples = X.shape[0]  # total number of examples
 
-    cfg.function = ActivationFuncs.SIGMOID
+    cfg.function = actfuncs.ActivationFuncs.SIGMOID
+    cfg.derivative = actfuncs.ActivationFuncs.get_derivaty(cfg.function)  # Get derivative here, we should use it then
 
     a = np.zeros((cfg.n, cfg.m))
     b = np.ones((cfg.m, 1))

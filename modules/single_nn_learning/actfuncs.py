@@ -12,9 +12,25 @@ import input_data_read
 
 class ActivationFuncs:
     SIGMOID = lambda x: 1.0 / (1.0 + np.exp(-x))
+    TH = lambda x: (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+
+    @staticmethod
+    def get_derivaty(func):
+        """ Get derivaty by function activation """
+        base = {
+            ActivationFuncs.SIGMOID: Derivatives.dSigmoid,
+        }
+        return base[func]
 
 
 class Derivatives:
+
+    dSigmoid = lambda x: ActivationFuncs.SIGMOID(x) * (1 - ActivationFuncs.SIGMOID(x))
+    dGTanh = lambda x: 1 - ActivationFuncs.TH(x) ** 2
+
+    """
+
+
     def isPrime(n):
         if n == 1 or n == 2 or n == 3:
             return True
@@ -87,3 +103,4 @@ class Derivatives:
             kFoldsInd.append((train_ind, test_ind))
 
         return kFoldsInd
+    """
