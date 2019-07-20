@@ -11,6 +11,7 @@ def sag(steps, x0, grad, func, func_counts, L, A_shape_0):
     h = 0.125 / L
     s = sum(gradients)
     for k in range(steps):
+        print(k)
         j = np.random.randint(0, A_shape_0 - 1)
         s -= gradients[j]
         del gradients[j]

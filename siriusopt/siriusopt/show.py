@@ -1,4 +1,4 @@
-def show(data, namefile, labels=[], title="", xlabel="", ylabel=""):
+def show(data, namefile, labels=[], title="", xlabel="", ylabel="", dpi=800):
     import matplotlib.pyplot as plt
 
     plt.title(title)
@@ -15,4 +15,4 @@ def show(data, namefile, labels=[], title="", xlabel="", ylabel=""):
     plt.legend(loc="upper right")
 
     plt.grid()
-    plt.savefig(f'{namefile}.png', format='png', dpi=900)
+    plt.savefig(f'{namefile}.png', format='png', dpi=dpi)
