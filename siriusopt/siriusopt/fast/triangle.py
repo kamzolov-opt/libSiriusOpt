@@ -1,3 +1,5 @@
+import numpy as np
+
 def ternary_search_vec(xk, zk, func):
     a = 0.
     b = 1.
@@ -12,19 +14,23 @@ def ternary_search_vec(xk, zk, func):
 
 
 def triangles_1_5(x0, func, grad, steps, L):
+
     xk = x0.copy()
     zk = x0
+    yk = x0
     ak = 1 / L
     res = [func(xk)]
+    # while True:
     for i in range(1, steps):
         a_bigk = 1000 / i ** 0.5
+
         ak = 1 / L * 0.5 + (1 / L**2 * 0.25 + ak**2)**0.5
         alpha = ternary_search_vec(xk, zk, func)
         yk = xk * alpha + zk * (1 - alpha)
         xk -= ak * grad(yk)
         zk = xk * alpha + zk * (1 - alpha)
-        a_bigk += ak
-        res.append(func(xk))
+        res.append(func(zk))
+
     return xk, res
 
 
