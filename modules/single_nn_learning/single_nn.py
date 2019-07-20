@@ -18,8 +18,6 @@ def S0(x):
 class ForwardResult:
     pass
 
-
-
 #===============================================================================
 
 def forwardEvalute(x_with_intercept, a, b, cfg = None):
