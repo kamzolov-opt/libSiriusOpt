@@ -35,11 +35,11 @@ def loadData(cacheIsOn = True):
 
     mndata = MNIST(absPathToData)
     mndata.gz = True
-    images, labels = mndata.load_training()
+    imagesTmp, labelsTmp = mndata.load_training()
   
     res = DataStorage()
-    res.images = images
-    res.labels = labels
+    res.images = imagesTmp
+    res.labels = labelsTmp
     res.pathToData  = absPathToData
     res.imageWidth  = 28
     res.imageHeight = 28
