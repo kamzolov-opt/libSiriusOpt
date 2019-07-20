@@ -11,19 +11,23 @@ import input_data_read
 
 
 class ActivationFuncs:
+    CONST   = lambda x: 1.0
     SIGMOID = lambda x: 1.0 / (1.0 + np.exp(-x))
-    TH = lambda x: (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
+    TH      = lambda x: (np.exp(x) - np.exp(-x)) / (np.exp(x) + np.exp(-x))
 
     @staticmethod
-    def get_derivaty(func):
+    def get_derivative(func):
         """ Get derivaty by function activation """
         base = {
+            ActivationFuncs.CONST:   Derivatives.dConst,
             ActivationFuncs.SIGMOID: Derivatives.dSigmoid,
+            ActivationFuncs.TH:      Derivatives.dGTanh,
+
         }
         return base[func]
 
 
 class Derivatives:
-
+    dConst   = lambda x: 0
     dSigmoid = lambda x: ActivationFuncs.SIGMOID(x) * (1 - ActivationFuncs.SIGMOID(x))
-    dGTanh = lambda x: 1 - ActivationFuncs.TH(x) ** 2
+    dGTanh   = lambda x: 1 - ActivationFuncs.TH(x) ** 2

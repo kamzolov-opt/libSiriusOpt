@@ -8,11 +8,10 @@ import numpy as np
 def S0(x):
     return 1.0
 
-def S(x):
-    return 1.0 / (1.0 + np.exp(-x))
-
-def dS_dOut(out):
-    return out * (1 - out)
+#def S(x):
+#    return 1.0 / (1.0 + np.exp(-x))
+#def dS_dOut(out):
+#    return out * (1 - out)
 
 #===============================================================================
 
@@ -52,7 +51,7 @@ def partial_DL_da(fwd, y, cfg = None):
     dL_da = np.zeros((N, M))
     for j in range(N):
         for m in range(M):
-            dL_da[j, m] = (fwd.Fhat - y[0]) * fwd.b[m] * (dS_dOut(fwd.o[m])) * fwd.x_with_intercept[j]
+            dL_da[j, m] = (fwd.Fhat - y[0]) * fwd.b[m] * cfg.derivative(fwd.o[m]) * fwd.x_with_intercept[j]
     return dL_da
 
 def partial_DL_db_compute(fwd, y, cfg):
