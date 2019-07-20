@@ -6,18 +6,20 @@ import sys, os, time, math, sys
 dirScript = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(dirScript)
 
-from single_nn import forwardEvalute
-from single_nn import partial_DL_da
-from single_nn import partial_DL_db
-from single_nn import partial_DL_da_compute
-from single_nn import partial_DL_db_compute
+from single_nn_batch import forwardEvalute
+from single_nn_batch import partial_DL_da
+from single_nn_batch import partial_DL_db
+from single_nn_batch import partial_DL_da_compute
+from single_nn_batch import partial_DL_db_compute
 
-import actfuncs
+from actfuncs_batch import *
 import numpy as np
 
 X = None              # Data Matrix, which stores examples by rows
 Y = None              # Label Vector, which stores examples by items
 Indicies = None       # Indicies of examples used for empiricalRisk() and 
+XBatch = None         # Data Matrix, stores examples by rows, for whole batch
+YBatch = None         # Label Vector, stores examples by items, for whole batch
 
 class Configuration:
    pass
@@ -56,29 +58,24 @@ def getZeroParams():
     return params
 
 def updateIndicies(newIndicies):
-    global Indicies;
+    global X, Y, Indicies, XBatch, YBatch;
+
     Indicies = newIndicies.copy()
+    XBatch = X[Indicies, :]
+    YBatch = Y[Indicies, :]
 
 def empiricalRisk(x):
     '''
     x is a parameters of neural net which consist of [a, b]
     step1 - from x extract [a, b]
-    step2 - which examples we should take
+    step2 - which examples we should take - take whole batch
     step3 - substitute into forwardEvalute(...)
     '''
-
     a, b = unpackParameterFromVector(x, cfg)
-    results = 0.0
-    
-    for i in range(Indicies.size):
-        xi = X[i, :]
-        xi = xi.reshape( (xi.size, 1) )
-        yi = Y[i]   
-
-        fwd = forwardEvalute(xi, a, b, cfg)
-        results += ((fwd.Fhat - yi) ** 2) / 2.0
-
-    return results / Indicies.size
+    fwd = forwardEvalute(XBatch.T, a, b, cfg)
+    delta = (fwd.Fhat - YBatch)
+    result = np.dot(delta.T, delta) / 2.0
+    return float(result / Indicies.size)
 
 def empiricalRiskGradientWithIndex(x, index):
     '''
@@ -95,7 +92,6 @@ def empiricalRiskGradient(x):
     step2 - np.asarray([partial_DL_da(fwd, y), partial_DL_db(fwd, y)])
     step3 - accumulate final gradient
     '''
-    
     a, b = unpackParameterFromVector(x, cfg)
     gradient = None
     

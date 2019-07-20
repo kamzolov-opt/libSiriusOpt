@@ -11,12 +11,14 @@ sys.path.append(os.path.join(dirScript, "./../../siriusopt"))
 sys.path.append(os.path.join(dirScript, "./../input_data_read"))
 sys.path.append(os.path.join(dirScript, "./../sampling"))
 sys.path.append(os.path.join(dirScript, "./../single_nn_learning"))
+sys.path.append(os.path.join(dirScript, "./../single_nn_learning_batch"))
 
 import siriusopt
 import input_data_read
 import sampling
-import single_nn_learning
-import actfuncs
+#import single_nn_learning
+import single_nn_learning_batch as single_nn_learning
+import actfuncs_batch as actfuncs
 
 if __name__ == "__main__":
     t0 = time.time()  
@@ -33,9 +35,10 @@ if __name__ == "__main__":
     single_nn_learning.cfg.function = actfuncs.ActivationFuncs.SIGMOID
     single_nn_learning.cfg.m = 10                                      
     single_nn_learning.cfg.n = single_nn_learning.X.shape[1]      
-    single_nn_learning.cfg.totalSamples = 20 #single_nn_learning.X.shape[0]
-    single_nn_learning.Indicies = sampling.getBatchSequential(data_storage, 0, single_nn_learning.cfg.totalSamples)
-   
+    single_nn_learning.cfg.totalSamples = single_nn_learning.X.shape[0]
+    single_nn_learning.cfg.batchSize = 10
+    single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, 0, single_nn_learning.cfg.batchSize))
+
     print(" number of activation functions: ", single_nn_learning.cfg.m)
     print(" number of input attributes: ", single_nn_learning.cfg.n)
     print(" number of total examples: ", single_nn_learning.cfg.totalSamples)
@@ -46,7 +49,8 @@ if __name__ == "__main__":
     print("Time to configure neural net: ", str(prepareNN_time), " seconds")
 
     print("BEFORE LEARNING: Current emppirical risk:", single_nn_learning.empiricalRisk(allParams))
-    print("BEFORE LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
+    #print("BEFORE LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
+    sys.exit(0)
 
     t0 = time.time()
     optParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 15, func = single_nn_learning.empiricalRisk, L = 100.0)
