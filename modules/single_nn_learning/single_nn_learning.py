@@ -138,7 +138,8 @@ if __name__ == "__main__":
     cfg.n = X.shape[1]            # number of input attributes
     cfg.totalSamples = X.shape[0] # total number of examples
 
-    cfg.function = ActivationFuncs.SIGMOID
+    cfg.function = actfuncs.ActivationFuncs.SIGMOID
+    cfg.derivative = actfuncs.ActivationFuncs.get_derivaty(cfg.function)  # Get derivative here, we should use it then
 
     a = np.zeros((cfg.n, cfg.m))
     b = np.ones((cfg.m, 1))
