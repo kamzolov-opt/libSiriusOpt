@@ -10,8 +10,8 @@ sys.path.append(dirScript)
 sys.path.append(os.path.join(dirScript, "./../../siriusopt"))
 sys.path.append(os.path.join(dirScript, "./../input_data_read"))
 sys.path.append(os.path.join(dirScript, "./../sampling"))
-sys.path.append(os.path.join(dirScript, "./../single_nn_learning"))
-sys.path.append(os.path.join(dirScript, "./../single_nn_learning_batch"))
+#sys.path.append(os.path.join(dirScript, "./../single_nn_learning"))
+#sys.path.append(os.path.join(dirScript, "./../single_nn_learning_batch"))
 
 import siriusopt
 import input_data_read

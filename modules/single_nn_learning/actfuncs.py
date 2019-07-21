@@ -27,20 +27,24 @@ def RReLU_2(a, x):
     else: return  x
 
 def ELU(x, a):
-    if x < 0: return a * (exp(x) - 1) 
-    else: return x
- def SELU (x, a, lambd):
+    if x < 0: 
+        return a * (exp(x) - 1) 
+    else: 
+        return x
+
+def SELU (x, a, lambd):
     '''
     lambd = 1.0507
     a = 1.67326
     '''   
- def SReLU(a_r, a_l, x, t_r, t_l):
-     if x <= t_l:
-        return t_l + a_l * (x - t_l)
-     else: 
-        if x >= t_r:
-            return t_r + a_r * (x - t_r)
-        else: return x   
+def SReLU(a_r, a_l, x, t_r, t_l):
+    if x <= t_l:
+       return t_l + a_l * (x - t_l)
+    else: 
+       if x >= t_r:
+           return t_r + a_r * (x - t_r)
+       else:
+           return x   
     
 def ISRLU(x, a):
     if x < 0: return (x / (1 + a * x**2)**0.5)
@@ -87,7 +91,8 @@ def dSReLU_dx(a_r, a_l, x, t_r, t_l):
     else: 
         if x >= t_r:
             return a_r
-        else: return 1  
+        else: 
+            return 1  
         
 def dISRLU_dx(x, a):
     if x < 0: return (1 / (1 + a * x**2)**0.5)**3
@@ -126,30 +131,29 @@ class ActivationFuncs:
     arctg          = lambda x: math.atan (x)
 
     Derivatives = {
-        ActivationFuncs.CONST:   lambda x: 0,
-        ActivationFuncs.SIGMOID: lambda x: ActivationFuncs.SIGMOID(x) * (1 - ActivationFuncs.SIGMOID(x))
-
-        ActivationFuncs.TH:              lambda x: 1 - ActivationFuncs.TH(x) ** 2
-        ActivationFuncs.softsign         lambda x: 1 / (1 + abs(x))**2
-        ActivationFuncs.ReLu             lambda x: dReLU_dx(x)
-        ActivationFuncs.leaky_reLU       lambda x: dleaky_reLU_dx(x)
-        ActivationFuncs.PReLU            lambda a, x: dPReLU_dx(a, x)
-        ActivationFuncs.PReLU_2          lambda a, x: dRReLU_2_dx(a, x)
-        ActivationFuncs.ELU              lambda x, a: dELU_dx(x, a)
-        ActivationFuncs.SELU             lambda x, a, lambd: dSELU_dx(x, a, lambd)
-        ActivationFuncs.SReLU            lambda a_r, a_l, x, t_r, t_l: dSReLU_dx(a_r, a_l, x, t_r, t_l)
-        ActivationFuncs.ISRLU            lambda x, a: dISRLU_dx(x, a)
-        ActivationFuncs.SoftPlus         lambda x: 1 / (1 + exp(-x))
-        ActivationFuncs.Bent_identity    lambda x: x / (2 * ((x**2 + 1)**0.5)) + 1
-        ActivationFuncs.SoftExponential  lambda x, a: dSoftExponential_dx(x, a)
-        ActivationFuncs.sinusoid         lambda x: cos(x)
-        ActivationFuncs.sinc             lambda x: dsinc_dx(x)
-        ActivationFuncs.gauss            lambda x: (-2) * x * exp(-(x * x))
-        ActivationFuncs.ISRU             lambda x: (1 / (1 + a * x**2)**0.5)**3
-        ActivationFuncs.arctg            lambda x: 1 / (x**2 + 1)
+        CONST:            lambda x: 0,
+        SIGMOID:          lambda x: ActivationFuncs.SIGMOID(x) * (1 - ActivationFuncs.SIGMOID(x)),
+        TH:               lambda x: 1 - ActivationFuncs.TH(x) ** 2,
+        softsign:         lambda x: 1 / (1 + abs(x))**2,
+        ReLu:             lambda x: dReLU_dx(x),
+        leaky_reLU:       lambda x: dleaky_reLU_dx(x),
+        PReLU:            lambda a, x: dPReLU_dx(a, x),
+        PReLU_2:          lambda a, x: dRReLU_2_dx(a, x),
+        ELU:              lambda x, a: dELU_dx(x, a),
+        SELU:             lambda x, a, lambd: dSELU_dx(x, a, lambd),
+        SReLU:            lambda a_r, a_l, x, t_r, t_l: dSReLU_dx(a_r, a_l, x, t_r, t_l),
+        ISRLU:            lambda x, a: dISRLU_dx(x, a),
+        SoftPlus:         lambda x: 1 / (1 + exp(-x)),
+        Bent_identity:    lambda x: x / (2 * ((x**2 + 1)**0.5)) + 1,
+        SoftExponential:  lambda x, a: dSoftExponential_dx(x, a),
+        sinusoid:         lambda x: cos(x),
+        sinc:             lambda x: dsinc_dx(x),
+        gauss:            lambda x: (-2) * x * exp(-(x * x)),
+        ISRU:             lambda x: (1 / (1 + a * x**2)**0.5)**3,
+        arctg:            lambda x: 1 / (x**2 + 1),
     }
 
     @staticmethod
-    def get_derivaty(func):
+    def get_derivative(func):
         """ Get derivaty by function activation """
         return ActivationFuncs.Derivatives.get(func)
