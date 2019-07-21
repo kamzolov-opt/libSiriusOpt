@@ -22,7 +22,7 @@ print(storage.images.shape)
 print(storage.labels.shape)
 
 func = lambda x: 0.5 * np.linalg.norm(storage.images @ x - storage.labels) ** 2
-gradi = lambda x, i: storage.images[i] * (storage.images[i].T @ x - storage.labels[i])
+gradi = lambda x, i: 2*storage.images[i] * (storage.images[i].T @ x - storage.labels[i])
 grad = lambda x: storage.images.T @ (storage.images @ x - storage.labels) * 2
 # L = np.trace(storage.images)
 L = 19590072744 * 3 #np.amax(np.linalg.eigh(2 * storage.images.T @ storage.images)[0])

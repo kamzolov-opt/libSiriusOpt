@@ -100,14 +100,8 @@ class ActivationFuncs:
             ActivationFuncs.gauss            Derivatives.dgauss
             ActivationFuncs.ISRU             Derivatives.dISRU
             ActivationFuncs.arctg            Derivatives.darctg 
-            
-            
-            
-
         }
         return base[func]
-
-
 
 def dReLU_dx(x):
     if x < 0: return 0
@@ -174,4 +168,3 @@ class Derivatives:
     dgauss          = lambda x: (-2) * x * exp(-(x * x))
     dISRU           = lambda x: (1 / (1 + a * x**2)**0.5)**3
     darctg          = lambda x: 1 / (x**2 + 1)
-    

@@ -11,8 +11,6 @@ import numpy as np
 import math
 import input_data_read
 
-#print(">>>", dir(input_data_read))
-
 def isPrime(n):
     if n == 1 or n == 2 or n == 3:
         return True
@@ -43,9 +41,6 @@ def getBatchSequential(storage, batchIndex, batchSize):
     if (iEnd >= totalDataMatrixLen):
         iEnd = totalDataMatrixLen
     return np.asarray(range(iStart, iEnd), dtype=np.int)
-
-
-
 
 def crossValidationIndicies(storage, test_size = 0.33, shuffle = False):
     totalDataMatrixLen = len(storage.images)
