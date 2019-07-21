@@ -1,0 +1,137 @@
+def dth_dx(x):
+    return 1 - (np.ex(x) - np.ex(-x)) / (np.ex(x) + np.ex(-x))**2
+
+def darctg_dx(x):
+    return 1 / (x**2 + 1)
+
+def dISRU_dx(x, a):
+    return (1 / (1 + a * x**2)**0.5)**3
+
+def dsoftsign_dx(x):
+    return 1 / (1 + abs(x))**2
+
+def softsign(x):
+    return x / (1 + abs(x))
+
+def dReLU_dx(x):
+    if x < 0: return 0
+    else: return 1
+    
+def ReLu(x):
+    if x < 0: return 0
+    else: return x
+    
+
+def dleaky_reLU_dx(x):
+    if x < 0: return 0.01
+    else: return 1
+    
+def leaky_reLU(x): 
+    if x < 0: return 0.01 * x
+    else: return 1
+
+def dPReLU_dx(a, x):
+    if x < 0: return a
+    else: return 1
+    
+def PReLU(a, x):
+    if x < 0: return a * x
+    else: return  x
+    
+    
+def dRReLU_2_dx(a, x):
+    if x < 0: return a
+    else: return 1
+    
+def RReLU(a, x):
+    if x < 0: return a * x
+    else: return  x
+
+def dELU_dx(x, a):
+    if x < 0: return a * (exp(x) - 1) + a * x
+    else: return 1
+    
+def ELU(x, a):
+    if x < 0: return a * (exp(x) - 1) 
+    else: return x
+
+def dSELU_dx(x, a, lambd):
+    if x < 0: return lambd * exp(x) * a
+    else: return lambd
+    
+def SELU (x, a, lambd):
+    '''
+    lambd = 1.0507
+    a = 1.67326
+    '''
+    if x < 0: return lambd * (exp(x) - 1) * a
+    else: return lambd * x
+    
+
+def dSReLU_dx(a_r, a_l, x, t_r, t_l):
+    if x <= t_l:
+        return a_l
+    else: 
+        if x >= t_r:
+            return a_r
+        else: return 1
+        
+def SReLU(a_r, a_l, x, t_r, t_l):
+     if x <= t_l:
+        return t_l + a_l * (x - t_l)
+     else: 
+        if x >= t_r:
+            return t_r + a_r * (x - t_r)
+        else: return x
+    
+
+def dISRLU_dx(x, a):
+    if x < 0: return (1 / (1 + a * x**2)**0.5)**3
+    else: return 1
+    
+def ISRLU(x, a):
+    if x < 0: return (x / (1 + a * x**2)**0.5)
+    else: return x
+
+def dSoftPlus_dx(x):
+    return 1 / (1 + exp(-x))
+
+def SoftPlus(x):
+    return  log(1 + exp(x))
+
+def dBent_identity_dx(x):
+    return x / (2 * ((x**2 + 1)**0.5)) + 1
+
+def Bent_identity(x):
+    return (((x**2 + 1)**0.5) - 1) / 2 + x
+    
+
+def dSoftExponential_dx(x, a):
+    if a < 0: return 1 / (1 - a * (a + x))
+    else: return exp(a * x)
+
+def SoftExponential(x, a):
+    if a < 0: return -(log(1 - a(x + a))) / a
+    elif a == 0: return x
+    else: return (exp(a * x)-1) / a - a
+    
+def dsinusoid_dx(x):
+    return cos(x)
+
+def sinusoid(x):
+    return sin(x)
+
+def dsinc_dx(x):
+    if x == 0: return 0
+    else: return cos(x) / x - sin(x) / x**2
+    
+def sinc(x):
+    if x == 1: return 0
+    else: return  sin(x) / x
+    
+
+def dgauss_dx(x):
+    return (-2) * x * exp(-(x * x))
+
+def gauss(x):
+    return exp(-(x ** 2))
