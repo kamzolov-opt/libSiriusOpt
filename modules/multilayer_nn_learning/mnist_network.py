@@ -12,7 +12,7 @@ from siriusopt.stochastic import sgd, sag_yana, sag, magic_sag2, mig
 from siriusopt.show import show
 import input_data_read as mnist
 from modules.multilayer_nn_learning.actfuncs import ActivationFuncs
-from modules.multilayer_nn_learning.siriusoptnetwork import NeuralNetwork
+from modules.multilayer_nn_learning.siriusoptnetwork import NeuralNetwork, Config
 from itertools import cycle
 from time import time
 
@@ -31,6 +31,7 @@ nn.add_layer()
 nn.add_tensors(10)
 nn.unpackParameterFromVector(np.asarray(weights))
 
+"""
 print(">>> Training process start")
 for i in range(1):
     n, m = 0, 100  # next(nc), next(mc)
@@ -40,9 +41,18 @@ print("Training process end \n")
 nn.save()
 # Testing
 print(">>> Testing process start")
-res_test = nn.test(storage.images, res_correct, limit=1000)
+res_test = nn.test(storage.images, res_correct, limit=10)
 
 print("> Testing results")
 print(f"All: {res_test[0]}")
 print(f"Valid: {res_test[1]}")
 print(f"Accuracy: {res_test[1] / res_test[0] * 100} %")
+"""
+
+Config.a_learn = storage.images[:100]
+Config.b_learn = res_correct[:100]
+L = 2000
+xk, points = sgd(x0=nn.packParameterToVector(), grad=nn.empiricalRiskGradient,
+                 steps=5, func=nn.empiricalRisk, L=L)
+
+show([points], "sgd_ml", labels=["sgd"])

@@ -1,19 +1,14 @@
-import numpy as np
-from siriusopt.show import show
 import sys
 
 sys.path.insert(0, '../input_data_read')
 
 import numpy as np
-from siriusopt.descent import descent, ternary_search, Grad_sp, RMS, bfgs
-from siriusopt.fast import fast_descent, grad_fast_step, Fast_grad_Nest
-from siriusopt.fast import Adam, Adagrad, triangles_1_5, triangles_2_0, Heavy_ball
-from siriusopt.stochastic import sgd, sag_yana, sag, magic_sag2, mig
-from siriusopt.show import show
-import input_data_read as mnist
 from modules.multilayer_nn_learning.actfuncs import ActivationFuncs
-from itertools import cycle
-from time import time
+
+
+class Config:
+    a_learn = None
+    b_learn = None
 
 
 class NeuralNetwork:
@@ -29,9 +24,9 @@ class NeuralNetwork:
             for tensor in layer.tensors:
                 if not tensor.bias:
                     tensor.activate()
-        return [element.value for element in self.layers[-1].tensors]
+        return [float(element.value) for element in self.layers[-1].tensors]
 
-    def train(self, a_train, b_train, speed=0.2):
+    def train(self, a_train, b_train, speed=0.2, correct_params=True):
         # A_train - train set x
         # b_train - train set y component
         # speed - learning rate
@@ -65,11 +60,13 @@ class NeuralNetwork:
                         for i in range(tensor.weights.size):
                             out_i = tensor.parents[i].value
                             tensor.dweights[i] += deltha * out_i
+                if correct_params:
+                    for l in range(len(self.layers) - 1, 0, -1):
+                        for t in range(len(self.layers[l].tensors)):
+                            tensor = self.layers[l].tensors[t]
+                            self.change_weights(l - 1, tensor, speed, tensor.deltha)
 
-                for l in range(len(self.layers) - 1, 0, -1):
-                    for t in range(len(self.layers[l].tensors)):
-                        tensor = self.layers[l].tensors[t]
-                        self.change_weights(l - 1, tensor, speed, tensor.deltha)
+
 
         except StopIteration:
             return
@@ -82,11 +79,13 @@ class NeuralNetwork:
         tensor.set_weights(weights)
 
     def test(self, a_test, b_test, limit=None):
+
         if limit is None:
             limit = len(a_test)
         all_experements, correct_experements = 0, 0
         for i in range(limit):
-            res = list(map(lambda el: 1 if el >= 0.8 else 0, self.run(a_test[i])))
+            run_results = self.run(a_test[i])
+            res = list(map(lambda el: 1 if el >= 0.8 else 0, run_results))
             real = b_test[i]
             if res == real:
                 correct_experements += 1
@@ -94,6 +93,25 @@ class NeuralNetwork:
             all_experements += 1
 
         return all_experements, correct_experements, correct_experements / all_experements * 100
+
+    def empiricalRisk(self, wk):
+        self.unpackParameterFromVector(wk)
+        a_train = Config.a_learn
+        b_train = Config.b_learn
+        error = 0
+        for ex in range(len(a_train)):
+            output = self.run(a_train[ex])
+
+            error += sum([(output[i] - b_train[ex][i]) ** 2 / 2 for i in range(len(output))])
+        return error
+
+    def empiricalRiskGradient(self, wk, i):
+        self.unpackParameterFromVector(wk)
+        a_train = Config.a_learn
+        b_train = Config.b_learn
+        self.train(iter(a_train), iter(b_train), correct_params=False)
+        dweights = self.packDparameterToVector(len(a_train))
+        return dweights
 
     def add_layer(self):
         self.layers.append(Layer())
@@ -124,29 +142,21 @@ class NeuralNetwork:
         return
 
     def packDparameterToVector(self, N):
-        dweights = None
+        dweights = np.array([])
         for layer in self.layers:
             for tensor in layer.tensors:
                 if not tensor.dweights.size:
                     continue
-                if dweights is None:
-                    dweights = tensor.dweights.copy()
-                dweights += tensor.dweights
+                dweights = np.concatenate((dweights, tensor.dweights))
         return np.array(dweights) / N
+
 
     def packParameterToVector(self):
         weights = []
         for layer in self.layers:
             for tensor in layer.tensors:
                 weights += list(tensor.weights)
-        return np.asarray(weights).reshape((len(weights), 1))
-
-    def empiricalRiskGradient(self):
-        dweights = []
-        for layer in self.layers:
-            for tensor in layer.tensors:
-                dweights += list(tensor.weights)
-        return np.asarray(dweights).reshape((len(dweights), 1))
+        return np.asarray(weights)
 
     def unpackParameterFromVector(self, vector):
         index = 0
@@ -209,5 +219,3 @@ class Tensor:
 
     def get_parents_values(self):
         return np.array(list(map(lambda element: element.value, self.parents)))
-
-
