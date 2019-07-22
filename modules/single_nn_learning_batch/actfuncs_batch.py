@@ -43,7 +43,7 @@ def SReLU(a_r, a_l, x, t_r, t_l):
      else: 
         if x >= t_r:
             return t_r + a_r * (x - t_r)
-       else:
+        else:
            return x   
     
 def ISRLU(x, a):

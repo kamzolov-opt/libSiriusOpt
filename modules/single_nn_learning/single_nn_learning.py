@@ -78,7 +78,7 @@ def empiricalRisk(x):
         fwd = forwardEvalute(xi, a, b, cfg)
         results += ((fwd.Fhat - yi) ** 2) / 2.0
 
-    return results / Indicies.size
+    return float(results / Indicies.size)
 
 def empiricalRiskGradientWithIndex(x, index):
     '''
