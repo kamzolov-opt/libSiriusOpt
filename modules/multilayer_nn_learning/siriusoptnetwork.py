@@ -3,7 +3,6 @@ from siriusopt.show import show
 import sys
 
 sys.path.insert(0, '../input_data_read')
-sys.path.insert(0, '../single_nn_learning')
 
 import numpy as np
 from siriusopt.descent import descent, ternary_search, Grad_sp, RMS, bfgs
@@ -12,7 +11,7 @@ from siriusopt.fast import Adam, Adagrad, triangles_1_5, triangles_2_0, Heavy_ba
 from siriusopt.stochastic import sgd, sag_yana, sag, magic_sag2, mig
 from siriusopt.show import show
 import input_data_read as mnist
-from actfuncs import ActivationFuncs
+from modules.multilayer_nn_learning.actfuncs import ActivationFuncs
 from itertools import cycle
 from time import time
 
@@ -51,7 +50,7 @@ class NeuralNetwork:
                         out_i = tensor.parents[i].value
                         tensor.dweights[i] = deltha * out_i
 
-                    # self.change_weights(-2, tensor, speed, deltha)
+                    self.change_weights(-2, tensor, speed, deltha)
 
                 for l in range(len(self.layers) - 2, 0, -1):
                     for t in range(len(self.layers[l].tensors)):
@@ -65,7 +64,7 @@ class NeuralNetwork:
                             out_i = tensor.parents[i].value
                             tensor.dweights[i] = deltha * out_i
 
-                            # self.change_weights(l-1, tensor, speed, deltha)
+                            self.change_weights(l - 1, tensor, speed, deltha)
 
         except StopIteration:
             return
@@ -77,8 +76,18 @@ class NeuralNetwork:
             weights[i] += -speed * deltha * xn
         tensor.set_weights(weights)
 
-    def test(self, a_test, b_test):
-        pass
+    def test(self, a_test, b_test, limit=None):
+        if limit is None:
+            limit = len(a_test)
+        all_experements, correct_experements = 0, 0
+        for i in range(limit):
+            res = list(map(lambda el: round(el), nn.run(a_test[i])))
+            real = list(map(lambda el: round(el), b_test[i]))
+            if res == real:
+                correct_experements += 1
+            all_experements += 1
+
+        return all_experements, correct_experements, correct_experements / all_experements * 100
 
     def add_layer(self):
         self.layers.append(Layer())
@@ -132,6 +141,11 @@ class NeuralNetwork:
         # return self.layers[layer].tensors[tensor].weights
         return np.asarray([n.weights[tensor] for n in self.layers[layer].tensors])
 
+    def save(self):
+        # Save weights
+        with open("weights.py", "w", encoding="utf8") as file:
+            file.write("weights = " + str(list(map(lambda x: x[0], self.packParameterToVector()))))
+
 
 class Layer:
 
@@ -155,7 +169,7 @@ class Tensor:
         self.weights = np.asarray(weights)  # Each weight correspond to each parent
         self.value = 1  # Actvation or Output of neuron
         self.act_func = act_func
-        self.dfunc = ActivationFuncs.get_derivaty(self.act_func)
+        self.dfunc = ActivationFuncs.get_derivative(self.act_func)
         self.dweights = np.zeros(self.weights.shape)
         self.bias = bias
 
@@ -177,6 +191,8 @@ class Tensor:
 if __name__ == '__main__':
 
     storage = mnist.loadData()
+    from b_train_normal import res_correct
+    from weights import weights
 
     storage.images = np.asarray(storage.images)
     storage.labels = np.asarray(storage.labels)
@@ -187,20 +203,21 @@ if __name__ == '__main__':
     nn.add_bias()
     nn.add_layer()
     nn.add_tensors(10)
-    # nn.import_all_weights()
+    nn.unpackParameterFromVector(np.asarray(weights))
 
-    from b_train_normal import b_train as res_correct
-
-    for i in range(5):
-        n, m = 0, 100  # next(nc), next(mc)
-        print(f">>> Training epoc {i}")
+    print(">>> Training process start")
+    for i in range(8):
+        n, m = 30000, 35000  # next(nc), next(mc)
+        print(f"Training epoc {i}")
         nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.25)
-
-    # Save weights
-    with open("resxk.txt", "w", encoding="utf8") as file:
-        file.write(str(nn.packParameterToVector()))
+    print("Training process end \n")
+    nn.save()
 
     # Testing
-    for i in range(100):
-        res = nn.run(storage.images[i])
-        print(storage.labels[i], res)
+    print(">>> Testing process start")
+    res_test = nn.test(storage.images, res_correct, 100)
+
+    print("> Testing results")
+    print(f"All: {res_test[0]}")
+    print(f"Valid: {res_test[1]}")
+    print(f"Accuracy: {res_test[1] / res_test[0] * 100} %")
