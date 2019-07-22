@@ -38,8 +38,8 @@ if __name__ == "__main__":
     t0 = time.time()
     print("Time to load data: ", str(loadData_time), " seconds")
 
-    single_nn_learning.X = data_storage.imagesMat[0:10,:]
-    single_nn_learning.Y = data_storage.labelsMat[0:10,:]
+    single_nn_learning.X = data_storage.imagesMat[0:1000,:]
+    single_nn_learning.Y = data_storage.labelsMat[0:1000,:]
 
 #    input_data_read.showImageMat(data_storage, 4)
 #    input_data_read.showImage(data_storage, 4)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     single_nn_learning.cfg.m = 10                                      
     single_nn_learning.cfg.n = single_nn_learning.X.shape[1]      
     single_nn_learning.cfg.totalSamples = single_nn_learning.X.shape[0]
-    single_nn_learning.cfg.batchSize = 2
+    single_nn_learning.cfg.batchSize = 1000
     single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, 0, single_nn_learning.cfg.batchSize))
 
     print(" number of activation functions: ", single_nn_learning.cfg.m)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     # Total number of batches  
     totalBatches = int((single_nn_learning.cfg.totalSamples + single_nn_learning.cfg.batchSize - 1) / single_nn_learning.cfg.batchSize)
-    maxEpocs = 5
+    maxEpocs = 30
     #totalBatches = 4
     #==========================================================================================================================================
     print("Adam")
@@ -116,7 +116,7 @@ if __name__ == "__main__":
                                               func = single_nn_learning.empiricalRisk)
     solve_time = time.time() - t0
     #==========================================================================================================================================
-    print("Triangles v2.0")
+    print("Triangles v1.5")
     allParams = single_nn_learning.getZeroParams() 
     single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, 0, single_nn_learning.cfg.batchSize))
 
@@ -127,8 +127,8 @@ if __name__ == "__main__":
         values_triag.append(single_nn_learning.empiricalRisk(allParams))
         for batch in range(totalBatches):  
             single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, batch, single_nn_learning.cfg.batchSize))
-            allParams, points = siriusopt.triangles_2_0(x0 = allParams, grad = single_nn_learning.empiricalRiskGradient, steps = 1, 
-                                              func = single_nn_learning.empiricalRisk)
+            allParams, points = siriusopt.triangles_1_5(x0 = allParams, grad = single_nn_learning.empiricalRiskGradient, steps = 1, 
+                                              func = single_nn_learning.empiricalRisk, L = 100.0)
     solve_time = time.time() - t0
     #==========================================================================================================================================
 
