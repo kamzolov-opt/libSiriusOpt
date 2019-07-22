@@ -1,4 +1,4 @@
-from gd import fast_grad_des_v1
+from siriusopt.gd import fast_grad_des_v1
 
 
 def Heavy_ball(x0, func, grad, steps, h=0.001):

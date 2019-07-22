@@ -1,5 +1,5 @@
 import numpy as np
-from gd import gradient_step
+from siriusopt.gd import gradient_step
 
 
 def fast_descent(grad, func, steps, x, L):

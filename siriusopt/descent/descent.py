@@ -1,4 +1,4 @@
-from gd import gradient_step
+from siriusopt.gd import gradient_step
 
 
 def bin_pow_ray(a, b, xk, grad, func_h, func):
