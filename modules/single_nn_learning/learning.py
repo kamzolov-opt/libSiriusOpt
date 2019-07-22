@@ -30,8 +30,8 @@ if __name__ == "__main__":
     t0 = time.time()
     print("Time to load data: ", str(loadData_time), " seconds")
 
-    single_nn_learning.X = data_storage.imagesMat
-    single_nn_learning.Y = data_storage.labelsMat
+    single_nn_learning.X = data_storage.imagesMat[0:10,:]
+    single_nn_learning.Y = data_storage.labelsMat[0:10,:]
 
 #    input_data_read.showImageMat(data_storage, 4)
 #    input_data_read.showImage(data_storage, 4)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     single_nn_learning.cfg.m = 10                                      
     single_nn_learning.cfg.n = single_nn_learning.X.shape[1]      
     single_nn_learning.cfg.totalSamples = single_nn_learning.X.shape[0]
-    single_nn_learning.cfg.batchSize = 10
+    single_nn_learning.cfg.batchSize = 2
     single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, 0, single_nn_learning.cfg.batchSize))
 
     print(" number of activation functions: ", single_nn_learning.cfg.m)
@@ -55,16 +55,32 @@ if __name__ == "__main__":
 
     print("BEFORE LEARNING: Current emppirical risk:", single_nn_learning.empiricalRisk(allParams))
     print("BEFORE LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
-    #sys.exit(0)
 
     t0 = time.time()
-    optParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 15, func = single_nn_learning.empiricalRisk, L = 100.0)
+
+    # Total number of batches  
+    totalBatches = int((single_nn_learning.cfg.totalSamples + single_nn_learning.cfg.batchSize - 1) / single_nn_learning.cfg.batchSize)
+    maxEpocs = 5
+    #totalBatches = 4
+
+    values = []
+
+    for epoc in range(maxEpocs):
+        print("epoc #", epoc)
+
+        values.append(single_nn_learning.empiricalRisk(allParams))
+        for batch in range(totalBatches):  
+            single_nn_learning.updateIndicies(sampling.getBatchSequential(data_storage, batch, single_nn_learning.cfg.batchSize))
+            allParams, points = siriusopt.sgd(x0 = allParams, grad = single_nn_learning.empiricalRiskGradientWithIndex, steps = 2, func = single_nn_learning.empiricalRisk, L = 100.0)
+
     solve_time = time.time() - t0
-    points = [el[0] for el in points]
+    print(">>>>>>>>>>>>", values)
+
+    points = [el for el in values]
     #print(optParams)
     print("Series of optimal values: ", points)
     siriusopt.show([points], namefile="sgd", labels=["sgd"])
     print("Time to solve neural net:  ", str(solve_time), " seconds")
 
-    print("AFTER LEARNING: Current emppirical risk:", single_nn_learning.empiricalRisk(optParams))
-    print("AFTER LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(optParams)))
+    print("AFTER LEARNING: Current emppirical risk:", single_nn_learning.empiricalRisk(allParams))
+    print("AFTER LEARNING: Empirical risk gradient l2 norm: ", np.linalg.norm(single_nn_learning.empiricalRiskGradient(allParams)))
