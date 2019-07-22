@@ -35,8 +35,12 @@ class NeuralNetwork:
         # A_train - train set x
         # b_train - train set y component
         # speed - learning rate
+        iteration = 0
         try:
             while True:
+                iteration += 1
+                if iteration % 100 == 0:
+                    print("> Iterration training", iteration)
                 self.run(next(a_train))  # forward propogation
                 b = next(b_train)
                 count_output_tensors = len(b)
@@ -48,9 +52,7 @@ class NeuralNetwork:
 
                     for i in range(tensor.weights.size):
                         out_i = tensor.parents[i].value
-                        tensor.dweights[i] = deltha * out_i
-
-                    self.change_weights(-2, tensor, speed, deltha)
+                        tensor.dweights[i] += deltha * out_i
 
                 for l in range(len(self.layers) - 2, 0, -1):
                     for t in range(len(self.layers[l].tensors)):
@@ -62,9 +64,12 @@ class NeuralNetwork:
 
                         for i in range(tensor.weights.size):
                             out_i = tensor.parents[i].value
-                            tensor.dweights[i] = deltha * out_i
+                            tensor.dweights[i] += deltha * out_i
 
-                            self.change_weights(l - 1, tensor, speed, deltha)
+                for l in range(len(self.layers) - 1, 0, -1):
+                    for t in range(len(self.layers[l].tensors)):
+                        tensor = self.layers[l].tensors[t]
+                        self.change_weights(l - 1, tensor, speed, tensor.deltha)
 
         except StopIteration:
             return
@@ -81,12 +86,10 @@ class NeuralNetwork:
             limit = len(a_test)
         all_experements, correct_experements = 0, 0
         for i in range(limit):
-            res = list(map(lambda el: 1 if el >= 0.8 else 0, nn.run(a_test[i])))
+            res = list(map(lambda el: 1 if el >= 0.8 else 0, self.run(a_test[i])))
             real = b_test[i]
             if res == real:
                 correct_experements += 1
-            else:
-                print(real, res)
 
             all_experements += 1
 
@@ -113,6 +116,23 @@ class NeuralNetwork:
             for tensor in layer.tensors:
                 length += tensor.weights.size
         return np.zeros((length, 1))
+
+    def reset_dweights(self):
+        for layer in self.layers:
+            for tensor in layer.tensors:
+                tensor.dweights = np.zeros(tensor.weights.shape)
+        return
+
+    def packDparameterToVector(self, N):
+        dweights = None
+        for layer in self.layers:
+            for tensor in layer.tensors:
+                if not tensor.dweights.size:
+                    continue
+                if dweights is None:
+                    dweights = tensor.dweights.copy()
+                dweights += tensor.dweights
+        return np.array(dweights) / N
 
     def packParameterToVector(self):
         weights = []
@@ -191,36 +211,3 @@ class Tensor:
         return np.array(list(map(lambda element: element.value, self.parents)))
 
 
-if __name__ == '__main__':
-
-    storage = mnist.loadData()
-    from b_train_normal import res_correct
-    from weights import weights
-
-    storage.images = np.asarray(storage.images)
-    storage.labels = np.asarray(storage.labels)
-
-    nn = NeuralNetwork()
-    nn.add_layer()
-    nn.add_tensors(storage.images.shape[1])
-    nn.add_bias()
-    nn.add_layer()
-    nn.add_tensors(10)
-    nn.unpackParameterFromVector(np.asarray(weights))
-
-    print(">>> Training process start")
-    for i in range(3):
-        n, m = 0, 10000  # next(nc), next(mc)
-        print(f"Training epoc {i}")
-        nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.005)
-    print("Training process end \n")
-    nn.save()
-
-    # Testing
-    print(">>> Testing process start")
-    res_test = nn.test(storage.images, res_correct, limit=1000)
-
-    print("> Testing results")
-    print(f"All: {res_test[0]}")
-    print(f"Valid: {res_test[1]}")
-    print(f"Accuracy: {res_test[1] / res_test[0] * 100} %")
