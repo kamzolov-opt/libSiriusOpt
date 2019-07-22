@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def Adagrad(xk, grad, func, steps, a=0.9, hk=0.001):
     n = xk.shape[0]
     res = [func(xk)]
