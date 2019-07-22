@@ -81,10 +81,13 @@ class NeuralNetwork:
             limit = len(a_test)
         all_experements, correct_experements = 0, 0
         for i in range(limit):
-            res = list(map(lambda el: round(el), nn.run(a_test[i])))
-            real = list(map(lambda el: round(el), b_test[i]))
+            res = list(map(lambda el: 1 if el >= 0.8 else 0, nn.run(a_test[i])))
+            real = b_test[i]
             if res == real:
                 correct_experements += 1
+            else:
+                print(real, res)
+
             all_experements += 1
 
         return all_experements, correct_experements, correct_experements / all_experements * 100
@@ -206,16 +209,16 @@ if __name__ == '__main__':
     nn.unpackParameterFromVector(np.asarray(weights))
 
     print(">>> Training process start")
-    for i in range(8):
-        n, m = 30000, 35000  # next(nc), next(mc)
+    for i in range(3):
+        n, m = 0, 10000  # next(nc), next(mc)
         print(f"Training epoc {i}")
-        nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.25)
+        nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.005)
     print("Training process end \n")
     nn.save()
 
     # Testing
     print(">>> Testing process start")
-    res_test = nn.test(storage.images, res_correct, 100)
+    res_test = nn.test(storage.images, res_correct, limit=1000)
 
     print("> Testing results")
     print(f"All: {res_test[0]}")
