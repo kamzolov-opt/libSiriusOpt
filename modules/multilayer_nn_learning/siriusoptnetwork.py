@@ -105,13 +105,13 @@ class NeuralNetwork:
             error += sum([(output[i] - b_train[ex][i]) ** 2 / 2 for i in range(len(output))])
         return error
 
-    def empiricalRiskGradient(self, wk, i):
+    def empiricalRiskGradient(self, wk, i=0):
         self.unpackParameterFromVector(wk)
         a_train = Config.a_learn
         b_train = Config.b_learn
         self.train(iter(a_train), iter(b_train), correct_params=False)
         dweights = self.packDparameterToVector(len(a_train))
-        return dweights
+        return dweights / a_train.shape[0]
 
     def add_layer(self):
         self.layers.append(Layer())
