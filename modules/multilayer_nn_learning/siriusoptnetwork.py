@@ -35,8 +35,12 @@ class NeuralNetwork:
         # A_train - train set x
         # b_train - train set y component
         # speed - learning rate
+        iteration = 0
         try:
             while True:
+                iteration += 1
+                if iteration % 100 == 0:
+                    print("> Iterration training", iteration)
                 self.run(next(a_train))  # forward propogation
                 b = next(b_train)
                 count_output_tensors = len(b)
@@ -48,9 +52,7 @@ class NeuralNetwork:
 
                     for i in range(tensor.weights.size):
                         out_i = tensor.parents[i].value
-                        tensor.dweights[i] = deltha * out_i
-
-                    self.change_weights(-2, tensor, speed, deltha)
+                        tensor.dweights[i] += deltha * out_i
 
                 for l in range(len(self.layers) - 2, 0, -1):
                     for t in range(len(self.layers[l].tensors)):
@@ -62,9 +64,12 @@ class NeuralNetwork:
 
                         for i in range(tensor.weights.size):
                             out_i = tensor.parents[i].value
-                            tensor.dweights[i] = deltha * out_i
+                            tensor.dweights[i] += deltha * out_i
 
-                            self.change_weights(l - 1, tensor, speed, deltha)
+                for l in range(len(self.layers) - 1, 0, -1):
+                    for t in range(len(self.layers[l].tensors)):
+                        tensor = self.layers[l].tensors[t]
+                        self.change_weights(l - 1, tensor, speed, tensor.deltha)
 
         except StopIteration:
             return
@@ -85,8 +90,6 @@ class NeuralNetwork:
             real = b_test[i]
             if res == real:
                 correct_experements += 1
-            else:
-                print(real, res)
 
             all_experements += 1
 
@@ -113,6 +116,21 @@ class NeuralNetwork:
             for tensor in layer.tensors:
                 length += tensor.weights.size
         return np.zeros((length, 1))
+
+    def reset_dweights(self):
+        for layer in self.layers:
+            for tensor in layer.tensors:
+                tensor.dweights = np.zeros(tensor.weights.shape)
+        return
+
+    def packDparameterToVector(self, N):
+        dweights = None
+        for layer in self.layers:
+            for tensor in layer.tensors:
+                if dweights is None:
+                    dweights = tensor.dweights.copy()
+                dweights += tensor.dweights
+        return np.array(dweights) / N
 
     def packParameterToVector(self):
         weights = []
@@ -209,7 +227,7 @@ if __name__ == '__main__':
     nn.unpackParameterFromVector(np.asarray(weights))
 
     print(">>> Training process start")
-    for i in range(3):
+    for i in range(1):
         n, m = 0, 10000  # next(nc), next(mc)
         print(f"Training epoc {i}")
         nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.005)
