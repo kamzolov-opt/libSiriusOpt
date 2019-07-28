@@ -24,6 +24,7 @@ class NeuralNetwork:
             for tensor in layer.tensors:
                 if not tensor.bias:
                     tensor.activate()
+
         return [float(element.value) for element in self.layers[-1].tensors]
 
     def train(self, a_train, b_train, speed=0.2, correct_params=True):
@@ -39,6 +40,7 @@ class NeuralNetwork:
                 self.run(next(a_train))  # forward propogation
                 b = next(b_train)
                 count_output_tensors = len(b)
+
                 for ex in range(count_output_tensors):
                     valid = b[ex]
                     tensor = self.layers[-1].tensors[ex]
@@ -54,7 +56,7 @@ class NeuralNetwork:
                         tensor = self.layers[l].tensors[t]
                         # if not tensor.bias:
                         deltha = sum(self.get_deltha_of_layer(l + 1) *
-                                     self.select_weights(layer=l + 1, tensor=t)) * tensor.dfunc(tensor)
+                                     self.select_weights(layer=l + 1, tensor=t)) * tensor.dfunc(tensor.value)
                         self.layers[l].tensors[t].deltha = deltha
 
                         for i in range(tensor.weights.size):
@@ -177,7 +179,7 @@ class NeuralNetwork:
     def save(self):
         # Save weights
         with open("weights.py", "w", encoding="utf8") as file:
-            file.write("weights = " + str(list(map(lambda x: x[0], self.packParameterToVector()))))
+            file.write("weights = " + str(list(map(lambda x: x, self.packParameterToVector()))))
 
 
 class Layer:
@@ -219,3 +221,6 @@ class Tensor:
 
     def get_parents_values(self):
         return np.array(list(map(lambda element: element.value, self.parents)))
+
+    def __repr__(self):
+        return str(self.value)

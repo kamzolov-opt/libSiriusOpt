@@ -24,7 +24,7 @@ from time import time
 
 storage = mnist.loadData()
 from b_train_normal import res_correct
-from weights import weights
+from modules.multilayer_nn_learning.weights import weights
 
 storage.images = np.asarray(storage.images)
 storage.labels = np.asarray(storage.labels)
@@ -37,24 +37,26 @@ nn.add_layer()
 nn.add_tensors(10)
 nn.unpackParameterFromVector(np.asarray(weights))
 
-"""
+nn.run(storage.images[0])
+
+time_train = time()
 print(">>> Training process start")
 for i in range(1):
-    n, m = 0, 100  # next(nc), next(mc)
+    n, m = 0, 5000  # next(nc), next(mc)
     print(f"Training epoc {i}")
     nn.train(iter(storage.images[n:m]), iter(res_correct[n:m]), speed=0.005)
-print("Training process end \n")
+print(f"Training process end {time() - time_train} s\n")
 nn.save()
 # Testing
 print(">>> Testing process start")
-res_test = nn.test(storage.images, res_correct, limit=10)
+res_test = nn.test(storage.images, res_correct, limit=1000)
 
 print("> Testing results")
 print(f"All: {res_test[0]}")
 print(f"Valid: {res_test[1]}")
 print(f"Accuracy: {res_test[1] / res_test[0] * 100} %")
-"""
 
+"""
 Config.a_learn = storage.images[:100]
 Config.b_learn = res_correct[:100]
 L = 2000
@@ -65,11 +67,11 @@ xk, points_sgd = sgd(x0=weights.copy(), gradi=nn.empiricalRiskGradient,
 
 xk, points_hb = Heavy_ball(x0=weights.copy(), grad=nn.empiricalRiskGradient, steps=5, func=nn.empiricalRisk)
 
-"""weights = nn.packParameterToVector().copy()
+weights = nn.packParameterToVector().copy()
 
 xk, points_adam = Adam(x0=weights,
                        grad=nn.empiricalRiskGradient, steps=5,
-                       func=nn.empiricalRisk)"""
+                       func=nn.empiricalRisk)
 
 xk, points_magicsag = magic_sag(x0=weights.copy(),
                                 steps=5,
@@ -94,3 +96,4 @@ xk, points_fastgr = descent(x0=weights.copy(),
 
 show([points_sgd, points_magicsag, points_hb, points_triangles15, points_fastgr], "sgd_ml",
      labels=["sgd", "magic_sag", "heavy_ball", "triangles 1.5", "gradient + ls"])
+"""
